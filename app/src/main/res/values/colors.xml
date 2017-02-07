@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimaryLight">#C5CAE9</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorText">#FFFFFF</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#727272</color>
+    <color name="colorDivider">#B6B6B6</color>
+
+
+
+    <color name="colorPrimaryGreen">#009688</color>
+    <color name="colorPrimaryDarkGreen">#00796B</color>
+    <color name="colorPrimaryLightGreen">#B2DFDB</color>
+    <color name="colorAccentGreen">#8BC34A</color>
+
+    <color name="colorPrimaryPurple">#673AB7</color>
+    <color name="colorPrimaryDarkPurple">#512DA8</color>
+    <color name="colorPrimaryLightPurple">#D1C4E9</color>
+    <color name="colorAccentPurple">#E040FB</color>
+
+    <color name="colorPrimaryRed">#F44336</color>
+    <color name="colorPrimaryDarkRed">#D32F2F</color>
+    <color name="colorPrimaryLightRed">#FFCDD2</color>
+    <color name="colorAccentRed">#FF9800</color>
+
+    <color name="colorPrimarylols1">#34314c</color>
+    <color name="colorPrimaryDarklols1">#47b8e0</color>
+    <color name="colorPrimaryLightlols1">#ffc952</color>
+    <color name="colorAccentlols1">#ff7473</color>
+
+    <color name="colorPrimarylols2">#004e66</color>
+    <color name="colorPrimaryDarklols2">#fcbe32</color>
+    <color name="colorPrimaryLightlols2">#ff5f2e</color>
+    <color name="colorAccentlols2">#e1eef6</color>
+
+    <color name="colorPrimarylols5">#090707</color>
+    <color name="colorPrimaryDarklols5">#E53A40</color>
+    <color name="colorPrimaryLightlols5">#EFDC05</color>
+    <color name="colorAccentlols5">#30A9DE</color>
+
+    <color name="colorPrimarylols7">#feee7d</color>
+    <color name="colorPrimaryDarklols7">#60c5ba</color>
+    <color name="colorPrimaryLightlols7">#ef5285</color>
+    <color name="colorAccentlols7">#a5dff9</color>
+
+    <color name="colorPrimarylols12">#1F2124</color>
+    <color name="colorPrimaryDarklols12">#383A3F</color>
+    <color name="colorPrimaryLightlols12">#F68657</color>
+    <color name="colorAccentlols12">#F6B352</color>
+
+    <color name="colorPrimarylols13">#454552</color>
+    <color name="colorPrimaryDarklols13">#4ea1d3</color>
+    <color name="colorPrimaryLightlols13">#d8e9ef</color>
+    <color name="colorAccentlols13">#e85a71</color>
+
+    <color name="colorPrimarylols14">#218380</color>
+    <color name="colorPrimaryDarklols14">#8F2D56</color>
+    <color name="colorPrimaryLightlols14">#D81159</color>
+    <color name="colorAccentlols14">#FFBC42</color>
+
+
+    <color name="emerald">#2ecc71</color>
+    <color name="wisteria">#8e44ad</color>
+    <color name="clouds">#ecf0f1</color>
+    <color name="midnight_blue">#141d26</color>
+
+    <color name="gray">#BDBDBD</color>
+    <color name="bluegray">#B0BEC5</color>
+
+
+    <color name="custom_default_fill">#3F51B5</color>
+    <color name="custom_default_edge">#303F9F</color>
+
+    <color name="custom_active_fill">#3F51B5</color>
+    <color name="custom_active_edge">#303F9F</color>
+
+    <color name="custom_disabled_fill">#C5CAE9</color>
+    <color name="custom_disabled_edge">#3F51B5</color>
+
+</resources>

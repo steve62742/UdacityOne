@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/detailslayout"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:layout_marginTop="75dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:id="@+id/tagline_card"
+        card_view:cardElevation="0dp"
+        card_view:cardBackgroundColor="@color/colorPrimaryLight">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:text="Tagline"
+            android:gravity="center"
+            android:textStyle="italic"
+            android:textSize="@dimen/font_medium"
+            android:id="@+id/tagline" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:id="@+id/details_card"
+        card_view:cardElevation="0dp"
+        card_view:cardBackgroundColor="@color/colorPrimaryLight">
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:stretchColumns="1"
+            android:layout_margin="16dp">
+            <TableRow>
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:text="{ion-film-marker}"
+                    android:id="@+id/directoricon"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/font_medium"
+                />
+                <TextView
+                    android:text="Director"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    />
+                <TextView
+                    android:gravity="right"
+                    android:text="New Text"
+                    android:textSize="@dimen/font_medium"
+                    android:id="@+id/director" />
+            </TableRow>
+            <TableRow>
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:text="{ion-calendar}"
+                    android:id="@+id/releasedateicon"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/font_medium" />
+                <TextView
+                    android:text="Release Date"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    />
+                <TextView
+                    android:gravity="right"
+                    android:text="New Text"
+                    android:textSize="@dimen/font_medium"
+                    android:id="@+id/releasedate" />
+            </TableRow>
+            <TableRow>
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:text="{ion-clock}"
+                    android:id="@+id/runtimeicon"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    android:textColor="@color/colorAccent"
+                    />
+                <TextView
+                    android:text="Runtime"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    />
+                <TextView
+                    android:gravity="right"
+                    android:text="New Text"
+                    android:textSize="@dimen/font_medium"
+                    android:id="@+id/runtime" />
+            </TableRow>
+            <TableRow>
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:text="{ion-cash}"
+                    android:id="@+id/budgeticon"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    android:textColor="@color/colorAccent"
+                    />
+                <TextView
+                    android:text="Budget"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    />
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:gravity="right"
+                    android:text="New Text"
+                    android:textSize="@dimen/font_medium"
+                    android:id="@+id/budget" />
+            </TableRow>
+            <TableRow>
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:text="{ion-cash}"
+                    android:id="@+id/revenueicon"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    android:textColor="@color/colorAccent" />
+                <TextView
+                    android:text="Revenue"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    />
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:gravity="right"
+                    android:text="New Text"
+                    android:textSize="@dimen/font_medium"
+                    android:id="@+id/revenue" />
+            </TableRow>
+            <TableRow>
+                <com.joanzapata.iconify.widget.IconTextView
+                    android:text="{ion-person}"
+                    android:id="@+id/votesicon"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    android:textColor="@color/colorAccent" />
+                <TextView
+                    android:text="Votes"
+                    android:shadowColor="#22000000"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1"
+                    android:textSize="@dimen/font_medium"
+                    />
+                <TextView
+                    android:gravity="right"
+                    android:text="New Text"
+                    android:textSize="@dimen/font_medium"
+                    android:id="@+id/votes" />
+            </TableRow>
+        </TableLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/genres_card"
+        card_view:cardElevation="0dp"
+        android:layout_margin="8dp"
+        card_view:cardBackgroundColor="@color/colorPrimaryLight">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+            <TextView
+                android:gravity="left"
+                android:text="Genres"
+                android:textSize="@dimen/font_medium"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+            <View
+                android:id="@+id/genresseparator"
+                android:background="@color/colorAccent"
+                android:layout_width = "fill_parent"
+                android:layout_height="1dip"
+                android:layout_margin="16dp"
+                android:layout_centerVertical ="true"
+                android:layout_alignParentTop="true"/>
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryLight"
+                android:id="@+id/genresgrid"
+            />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:id="@+id/summary_card"
+        card_view:cardElevation="0dp"
+        card_view:cardBackgroundColor="@color/colorPrimaryLight">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+            <TextView
+                android:gravity="left"
+                android:text="Summary"
+                android:textSize="@dimen/font_medium"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+            <View
+                android:background="@color/colorAccent"
+                android:id="@+id/summaryseparator"
+                android:layout_width = "fill_parent"
+                android:layout_height="1dip"
+                android:layout_margin="16dp"
+                android:layout_centerVertical ="true"
+                android:layout_alignParentTop="true"/>
+            <ayar.oktay.advancedtextview.AdvancedTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:text="Summary"
+                app:justifyText="true"
+                android:textSize="@dimen/font_medium"
+                android:id="@+id/summary" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/tags_card"
+        card_view:cardElevation="0dp"
+        android:layout_margin="8dp"
+        card_view:cardBackgroundColor="@color/colorPrimaryLight">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+            <TextView
+                android:gravity="left"
+                android:text="Tags"
+                android:textSize="@dimen/font_medium"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+            <View
+                android:background="@color/colorAccent"
+                android:id="@+id/tagsseparator"
+                android:layout_width = "fill_parent"
+                android:layout_height="1dip"
+                android:layout_margin="16dp"
+                android:layout_centerVertical ="true"
+                android:layout_alignParentTop="true"/>
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:id="@+id/tagsgrid"
+                />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/collection_card"
+        card_view:cardElevation="0dp"
+        android:layout_margin="8dp"
+        card_view:cardBackgroundColor="@color/colorPrimaryLight">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:gravity="left"
+                android:text="Collection"
+                android:textSize="@dimen/font_medium"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+            <View
+                android:background="@color/colorAccent"
+                android:id="@+id/collectionseparator"
+                android:layout_width = "fill_parent"
+                android:layout_height="1dip"
+                android:layout_margin="16dp"
+                android:layout_centerVertical ="true"
+                android:layout_alignParentTop="true"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:id="@+id/collectionimage" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.stefvar.udacityone.customClasses.OutScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+
+        <com.stefvar.udacityone.customClasses.HeaderFrameLayout
+            android:id="@+id/main_header"
+            android:layout_width="match_parent"
+            android:layout_height="275dp">
+
+            <ImageView
+                android:id="@+id/main_header_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+            <ImageView
+                android:id="@+id/main_header_mask"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/bk_vediomask_bottom" />
+
+
+
+        </com.stefvar.udacityone.customClasses.HeaderFrameLayout>
+
+
+
+        <com.stefvar.udacityone.customClasses.PullRelativeLayout
+            android:id="@+id/main_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="200dp">
+
+            <LinearLayout
+                android:id="@+id/main_content"
+                android:background="@color/colorPrimaryDark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="75dp">
+
+                <include layout="@layout/movie_details"/>
+                <include layout="@layout/movie_cast"/>
+
+
+
+
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/main_poster"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft="15dp" />
+
+            <LinearLayout
+                android:id="@+id/main_info"
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                android:layout_toRightOf="@id/main_poster"
+                android:orientation="vertical"
+                android:paddingLeft="20dp">
+
+                <LinearLayout
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="14dp"
+                        android:id="@+id/first_star"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/rating_bigger_select" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="14dp"
+                        android:id="@+id/second_star"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/rating_bigger_select" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="14dp"
+                        android:id="@+id/third_star"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/rating_bigger_select" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="14dp"
+                        android:id="@+id/fourth_star"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/rating_bigger_select" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="14dp"
+                        android:id="@+id/fifth_star"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/rating_bigger_select" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/movie_rating"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:textColor="#ff5021"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/movie_title"
+                    android:text="Batman v Superman: Dawn of Justice"
+                    android:textColor="@android:color/white"
+                    android:textSize="21sp" />
+            </LinearLayout>
+        </com.stefvar.udacityone.customClasses.PullRelativeLayout>
+
+
+    </RelativeLayout>
+</com.stefvar.udacityone.customClasses.OutScrollView>
+
+
+
+
+
+<!--</LinearLayout>-->
