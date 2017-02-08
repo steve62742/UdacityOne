@@ -3,7 +3,7 @@ package com.stefvar.udacityone.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +11,13 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
+import com.google.gson.Gson;
 import com.labo.kaji.fragmentanimations.CubeAnimation;
 import com.stefvar.udacityone.DAO.Movies.FocusMovieDAO;
 import com.stefvar.udacityone.GridAdapter;
 import com.stefvar.udacityone.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,7 +35,7 @@ public class GridFragment extends Fragment
     @BindView(R.id.focusmovieslayout)
     FrameLayout focusmovieslayout;
     private GridFragmentInterface GridInterface;
-    private List<FocusMovieDAO> movies;
+    private List<FocusMovieDAO> movies = new ArrayList<>();;
 
     @Override
     public void sendViewPosition(int position) {
@@ -78,31 +80,41 @@ public class GridFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            //mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+            //String json = savedInstanceState.getString("GRIDMOVIES");
+            ArrayList stringMovies = savedInstanceState.getStringArrayList("GRIDMOVIES");
+            Gson gson = new Gson();
+            for (int i = 0; i < stringMovies.size(); i++){
+                this.movies.add(gson.fromJson( stringMovies.get(i).toString(), FocusMovieDAO.class)  );
+            }
+
+        }
+
+
+
         View view = inflater.inflate(R.layout.fragment_grid, container, false);
         ButterKnife.bind(this, view);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
-        createCustomAdapter(recyclerView, linearLayoutManager);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this.getContext() , 2);
+        createCustomAdapter(recyclerView, gridLayoutManager);
 
         return view;
     }
 
 
-    private void createCustomAdapter(RecyclerView recyclerView, LinearLayoutManager linearLayoutManager) {
+    private void createCustomAdapter(RecyclerView recyclerView, GridLayoutManager gridLayoutManager) {
         GridAdapter focusmovieAdapter = new GridAdapter(this.getContext(), (int) getResources().getDimension(R.dimen.custom_item_height) , this);
         focusmovieAdapter.addItems(this.movies);
         if (recyclerView != null) {
-            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setLayoutManager(gridLayoutManager);
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(focusmovieAdapter);
         }
     }
 
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 
 
 
@@ -117,6 +129,27 @@ public class GridFragment extends Fragment
     public void setData(List<FocusMovieDAO> movies) {
         this.movies = movies;
     }
+
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        Gson gson = new Gson();
+        ArrayList stringMovies = new ArrayList();
+        for (int i = 0; i<this.movies.size(); i++){
+            stringMovies.add( gson.toJson(this.movies.get(i)) );
+        }
+        savedInstanceState.putStringArrayList("GRIDMOVIES" , stringMovies );
+
+        // etc.
+    }
+
+
 
 
 }

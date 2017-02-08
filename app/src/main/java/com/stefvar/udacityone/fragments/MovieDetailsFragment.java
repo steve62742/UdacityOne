@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.joanzapata.iconify.widget.IconTextView;
 import com.meetic.marypopup.MaryPopup;
 import com.squareup.picasso.Picasso;
@@ -281,6 +282,17 @@ public class MovieDetailsFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
         ButterKnife.bind(this, view);
 
+
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            //mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+            //String json = savedInstanceState.getString("GRIDMOVIES");
+            String stringDetails = savedInstanceState.getString("MOVIEDETAILS");
+            Gson gson = new Gson();
+            this.movie = gson.fromJson(stringDetails , MovieDetailsDAO.class );
+
+
+        }
 
         marypopup = MaryPopup.with((Activity) this.getContext())
                 .cancellable(true)
@@ -583,6 +595,24 @@ public class MovieDetailsFragment extends Fragment
     private void openOutUi() {
         mPullRelativeLayout.open();
         mHeaderFrameLayout.open();
+    }
+
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        Gson gson = new Gson();
+        String stringDetails = "";
+        stringDetails = gson.toJson(this.movie);
+
+        savedInstanceState.putString("MOVIEDETAILS" , stringDetails );
+
+        // etc.
     }
 
 

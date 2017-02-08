@@ -65,11 +65,12 @@ public class GridAdapter extends RecyclerView.Adapter {
         holder.titleTextView.setText(focusMovieDAO.getTitle());
         holder.subtitleTextView.setText(focusMovieDAO.getSubTitle());
         Picasso.with(context)
-                .load("https://image.tmdb.org/t/p/w780"+ focusMovieDAO.getDrawable())
+                .load("https://image.tmdb.org/t/p/w500"+ focusMovieDAO.getDrawable())
                 .error(R.drawable.error)
                 .placeholder(R.drawable.placeholder)
                 .fit()
-                .centerCrop()
+                //.centerCrop()
+                .centerInside()
                 .into(holder.image);
 
     }

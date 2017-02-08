@@ -1,9 +1,11 @@
 package com.stefvar.udacityone.DAO.Movies;
 
+import java.io.Serializable;
+
 /**
  * Created by steve62742 on 15/7/2016.
  */
-public class FocusMovieDAO {
+public class FocusMovieDAO  implements Serializable {
 
 
 
@@ -11,7 +13,7 @@ public class FocusMovieDAO {
     String subTitle;
     String drawable;
 
-    public FocusMovieDAO(String title, String subTitle, String drawable) {
+    public FocusMovieDAO(String title, String subTitle, String drawable)  {
         this.title = title;
         this.subTitle = subTitle;
         this.drawable = drawable;
@@ -39,6 +41,13 @@ public class FocusMovieDAO {
 
     public void setDrawable(String drawable) {
         this.drawable = drawable;
+    }
+
+    public String getJSON(){
+        return "{'title':'"+this.title+"' , 'subtitle':"+this.subTitle+"' , 'drawable':'"+this.drawable+"'}";
+    }
+    public void setJSON(String jsonString){
+
     }
 
 

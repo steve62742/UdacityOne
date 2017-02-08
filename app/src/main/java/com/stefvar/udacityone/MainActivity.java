@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
+import com.google.gson.Gson;
 import com.stefvar.udacityone.DAO.Movies.FocusMovieDAO;
 import com.stefvar.udacityone.DAO.Movies.MovieDAO;
 import com.stefvar.udacityone.DAO.Movies.MovieDetailsDAO;
@@ -56,10 +57,12 @@ public class MainActivity extends AppCompatActivity
     private MovieDetailsDAO movie = new MovieDetailsDAO();
 
 
-    private String API_KEY = "API_KEY";
+    private String API_KEY =  "API_KEY";
 
     boolean isOpenMovieDetails = false;
     int count_api = 10;
+    Integer clickedMovie;
+    String movieType = "popular";
 
 
 
@@ -86,10 +89,33 @@ public class MainActivity extends AppCompatActivity
 
         navView.setNavigationItemSelectedListener(this);
 
-        gridFragment = new GridFragment();
+        //gridFragment = new GridFragment();
+
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            //mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+            //String json = savedInstanceState.getString("GRIDMOVIES");
+            Gson gson = new Gson();
+
+            if (savedInstanceState.containsKey("POPULAR") ){
+                hash_movies.put("popular" , gson.fromJson(  savedInstanceState.getString("POPULAR") , MoviesDAO.class ) );
+            }
+            if (savedInstanceState.containsKey("TOPRATED") ){
+                hash_movies.put("top_rated" , gson.fromJson(  savedInstanceState.getString("TOPRATED") , MoviesDAO.class ) );
+            }
+            movieType = savedInstanceState.getString("TYPE");
+
+            movies = hash_movies.get(movieType);
+
+            if (savedInstanceState.containsKey("CLICKED") ){
+                clickedMovie = savedInstanceState.getInt("CLICKED");
+            }
+
+        }else {
 
 
-        getMovies("popular");
+            getMovies();
+        }
 
 
     }
@@ -135,7 +161,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void getClickedMovie(Integer position) {
-
+        clickedMovie = position;
         getMovieDetails(position);
     }
 
@@ -171,10 +197,10 @@ public class MainActivity extends AppCompatActivity
 
 
 
-    public void getMovies(final String path) {
+    public void getMovies() {
 
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<MoviesDAO> call = apiService.getPreListedMovies(path, API_KEY);
+        Call<MoviesDAO> call = apiService.getPreListedMovies(movieType, API_KEY);
         //if (reshowFragment(path) == false) {
             showLoading();
             call.enqueue(new Callback<MoviesDAO>() {
@@ -182,17 +208,17 @@ public class MainActivity extends AppCompatActivity
                 public void onResponse(Call<MoviesDAO> call, Response<MoviesDAO> response) {
                     if (response.code() == 200) {
                         movies = response.body();
-                        hash_movies.put(path, movies);
+                        hash_movies.put(movieType, movies);
 
                         gridFragment = new GridFragment();
                         List<FocusMovieDAO> testlist = new ArrayList<>();
                         List<MovieDAO> fetchedMovies = movies.getResults();
                         for (int i = 0; i < count_api; i++) {
                             MovieDAO currentMovie = fetchedMovies.get(i);
-                            testlist.add(new FocusMovieDAO(currentMovie.getTitle(), "" + currentMovie.getVoteAverage(), currentMovie.getBackdropPath()));
+                            testlist.add(new FocusMovieDAO(currentMovie.getTitle(), "" + currentMovie.getVoteAverage(), currentMovie.getPosterPath() ));
                         }
                         gridFragment.setData(testlist);
-                        changeFragment(gridFragment, path);
+                        changeFragment(gridFragment, movieType);
                     } else {
                         Log.e("test2", "kodikos: " + response.code());
                     }
@@ -297,14 +323,54 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_popular && !item.isChecked() ) {
-            getMovies("popular");
+            //getMovies("popular");
+            movieType = "popular";
+            getMovies();
 
         } else if (id == R.id.nav_rated && !item.isChecked() ) {
-            getMovies("top_rated");
+            //getMovies("top_rated");
+            movieType = "top_rated";
+            getMovies();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        Gson gson = new Gson();
+        //String json = gson.toJson(this.movies);
+
+        String json = "";
+        savedInstanceState.putString("TYPE" , movieType);
+
+        if (hash_movies.containsKey("popular") ){
+            String popularMovies = gson.toJson( hash_movies.get("popular") ) ;
+            savedInstanceState.putString("POPULAR" , popularMovies );
+        }
+        if (hash_movies.containsKey("top_rated") ){
+            String topRatedMovies = gson.toJson( hash_movies.get("top_rated") ) ;
+            savedInstanceState.putString("TOPRATED" , topRatedMovies );
+        }
+
+        if (clickedMovie != null){
+            savedInstanceState.putInt("CLICKED" , clickedMovie);
+        }
+
+        // etc.
+    }
+
+
+
+
+
 }
