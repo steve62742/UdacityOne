@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+
+    <ayar.oktay.advancedtextview.AdvancedTextView
+        android:id="@+id/reviewer_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Summary"
+        android:textSize="@dimen/font_medium"
+        android:textStyle="bold"
+        app:justifyText="true" />
+
+
+    <ayar.oktay.advancedtextview.AdvancedTextView
+        android:id="@+id/review"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Summary"
+        android:textSize="@dimen/font_medium"
+        android:textStyle="italic"
+        app:countingText="false"
+        app:justifyText="true" />
+
+
+    <View
+        android:background="@color/colorAccent"
+        android:layout_width = "fill_parent"
+        android:id="@+id/reviewseparator"
+        android:layout_height="1dip"
+        android:layout_margin="16dp"
+        android:layout_centerVertical ="true"
+        android:layout_alignParentTop="true"/>
+
+</LinearLayout>

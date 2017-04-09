@@ -8,7 +8,9 @@ import com.stefvar.udacityone.DAO.MovieDetails.MovieCreditsDAO;
 import com.stefvar.udacityone.DAO.MovieDetails.MovieImagesDAO;
 import com.stefvar.udacityone.DAO.MovieDetails.MovieKeywordsDAO;
 import com.stefvar.udacityone.DAO.MovieDetails.MovieListsDAO;
+import com.stefvar.udacityone.DAO.MovieDetails.MovieReviews;
 import com.stefvar.udacityone.DAO.MovieDetails.MovieSimilarDAO;
+import com.stefvar.udacityone.DAO.MovieDetails.MovieVideos;
 import com.stefvar.udacityone.DAO.MovieDetails.ProductionCompanyDAO;
 import com.stefvar.udacityone.DAO.MovieDetails.ProductionCountryDAO;
 import com.stefvar.udacityone.DAO.MovieDetails.SpokenLanguageDAO;
@@ -111,6 +113,12 @@ public class MovieDetailsDAO {
     @SerializedName("credits")
     @Expose
     private MovieCreditsDAO credits;
+    @SerializedName("videos")
+    @Expose
+    private MovieVideos videos;
+    @SerializedName("reviews")
+    @Expose
+    private MovieReviews reviews;
 
     /**
      *
@@ -652,4 +660,24 @@ public class MovieDetailsDAO {
     public void setCredits(MovieCreditsDAO credits) {
         this.credits = credits;
     }
+
+
+
+
+    public MovieVideos getVideos() {
+        return videos;
+    }
+
+    public void setVideos(MovieVideos videos) {
+        this.videos = videos;
+    }
+
+    public MovieReviews getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(MovieReviews reviews) {
+        this.reviews = reviews;
+    }
+
 }

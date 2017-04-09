@@ -1,10 +1,13 @@
 package com.stefvar.udacityone.fragments;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -30,6 +33,7 @@ import com.stefvar.udacityone.DAO.Movies.MovieDetailsDAO;
 import com.stefvar.udacityone.DetailAdapter;
 import com.stefvar.udacityone.MovieDetailsAdapter;
 import com.stefvar.udacityone.R;
+import com.stefvar.udacityone.ReviewAdapter;
 import com.stefvar.udacityone.WordAdapter;
 import com.stefvar.udacityone.customClasses.HeaderFrameLayout;
 import com.stefvar.udacityone.customClasses.OutScrollView;
@@ -160,6 +164,18 @@ public class MovieDetailsFragment extends Fragment
     LinearLayout castlayout;
 
 
+    @BindView(R.id.youtube)
+    IconTextView youtube;
+    @BindView(R.id.dbsave)
+    IconTextView dbsave;
+    @BindView(R.id.testrel)
+    RelativeLayout testrel;
+    @BindView(R.id.reviewseparator)
+    View reviewseparator;
+    @BindView(R.id.reviewgrid)
+    RecyclerView reviewgrid;
+    @BindView(R.id.review_card)
+    CardView reviewCard;
 
     private MovieDetailsFragmentInterface fragmentInterface;
 
@@ -199,11 +215,11 @@ public class MovieDetailsFragment extends Fragment
                 .show();
     }
 
-    @OnClick(R.id.collectionimage)
-    public void onClick() {
-        fragmentInterface.getCollectionClick();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //null.unbind();
     }
-
 
 
     /*
@@ -220,6 +236,13 @@ public class MovieDetailsFragment extends Fragment
 
         void getCollectionClick();
 
+        void openYoutube(String id);
+
+        void saveMovieDB();
+
+        void removeMovieDB(Integer id);
+
+        Boolean checkSaved( Integer id);
 
     }
 
@@ -289,7 +312,7 @@ public class MovieDetailsFragment extends Fragment
             //String json = savedInstanceState.getString("GRIDMOVIES");
             String stringDetails = savedInstanceState.getString("MOVIEDETAILS");
             Gson gson = new Gson();
-            this.movie = gson.fromJson(stringDetails , MovieDetailsDAO.class );
+            this.movie = gson.fromJson(stringDetails, MovieDetailsDAO.class);
 
 
         }
@@ -310,6 +333,8 @@ public class MovieDetailsFragment extends Fragment
         initData();
         initListener();
 
+        colorSaved();
+
 
         return view;
     }
@@ -318,7 +343,6 @@ public class MovieDetailsFragment extends Fragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
     }
-
 
 
     private void initData() {
@@ -356,10 +380,10 @@ public class MovieDetailsFragment extends Fragment
                 .centerCrop()
                 .into(mIconIv);
 
-        if ( movie.getVoteAverage() != null  ){
+        if (movie.getVoteAverage() != null) {
             movieRating.setText(movie.getVoteAverage().toString());
-        }else{
-            movieRating.setText( "-");
+        } else {
+            movieRating.setText("-");
         }
         movieTitle.setText(movie.getTitle());
 
@@ -381,15 +405,15 @@ public class MovieDetailsFragment extends Fragment
         } else {
             director.setText("-");
         }
-        if ( movie.getReleaseDate() != null  ){
+        if (movie.getReleaseDate() != null) {
             releasedate.setText(movie.getReleaseDate());
-        }else{
-            releasedate.setText( "-" );
+        } else {
+            releasedate.setText("-");
         }
-        if ( movie.getRuntime() != null ){
+        if (movie.getRuntime() != null) {
             runtime.setText(movie.getRuntime().toString() + "'");
-        }else{
-            runtime.setText( "-");
+        } else {
+            runtime.setText("-");
         }
         if (movie.getBudget() == 0) {
             budget.setText("-");
@@ -430,6 +454,18 @@ public class MovieDetailsFragment extends Fragment
         } else {
             similarlistcard.setVisibility(View.GONE);
         }
+        if (movie.getReviews().getResults().size() > 0) {
+            reviewCard.setVisibility(View.VISIBLE);
+            ReviewAdapter reviewAdapter = new ReviewAdapter(this.getContext());
+            reviewAdapter.setReviews(movie.getReviews().getResults());
+            reviewgrid.setAdapter(reviewAdapter);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
+            reviewgrid.setLayoutManager(layoutManager);
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        } else {
+            reviewCard.setVisibility(View.GONE);
+        }
         if (movie.getKeywords().getKeywords().size() > 0) {
             tagsCard.setVisibility(View.VISIBLE);
             WordAdapter tagsAdapter = new WordAdapter(this.getContext(), movie.getKeywords());
@@ -465,7 +501,7 @@ public class MovieDetailsFragment extends Fragment
             collectionCard.setVisibility(View.GONE);
         } else {
             collectionCard.setVisibility(View.VISIBLE);
-            if (movie.getBelongsToCollection().getBackdropPath()!= null  ){
+            if (movie.getBelongsToCollection().getBackdropPath() != null) {
                 Picasso.with(this.getContext())
                         .load("https://image.tmdb.org/t/p/w780/" + movie.getBelongsToCollection().getBackdropPath())
                         .error(R.drawable.error)
@@ -473,7 +509,7 @@ public class MovieDetailsFragment extends Fragment
                         .fit()
                         .centerInside()
                         .into(collectionimage);
-            }else{
+            } else {
                 Picasso.with(this.getContext())
                         .load(backdropURL)
                         .error(R.drawable.error)
@@ -485,6 +521,14 @@ public class MovieDetailsFragment extends Fragment
         }
 
 
+    }
+
+    private void colorSaved(){
+        if ( fragmentInterface.checkSaved(movie.getId())){
+            dbsave.setTextColor( getResources().getColor( R.color.colorAccent  ) );
+        }else{
+            dbsave.setTextColor( getResources().getColor( R.color.colorPrimaryLight  ) );
+        }
     }
 
     private void initListener() {
@@ -514,6 +558,8 @@ public class MovieDetailsFragment extends Fragment
                         mPullRelativeLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     }
                 });
+
+        //youtube.setOnClickListener(this);
     }
 
     private void testAnim() {
@@ -583,6 +629,44 @@ public class MovieDetailsFragment extends Fragment
         }
     }
 
+
+    public void openYoutube(String id){
+        try {
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + id));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+        } catch (ActivityNotFoundException e) {
+
+            // youtube is not installed.Will be opened in other available apps
+
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://youtube.com/watch?v=" + id));
+            startActivity(i);
+        }
+    }
+
+
+
+    @OnClick({R.id.youtube, R.id.dbsave})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.youtube:
+                openYoutube("QyO1dRCNnTY");
+                break;
+            case R.id.dbsave:
+
+                if ( fragmentInterface.checkSaved(movie.getId())){
+                    fragmentInterface.removeMovieDB(movie.getId());
+                }else{
+                    fragmentInterface.saveMovieDB();
+                }
+                colorSaved();
+
+                break;
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -598,8 +682,6 @@ public class MovieDetailsFragment extends Fragment
     }
 
 
-
-
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -610,11 +692,10 @@ public class MovieDetailsFragment extends Fragment
         String stringDetails = "";
         stringDetails = gson.toJson(this.movie);
 
-        savedInstanceState.putString("MOVIEDETAILS" , stringDetails );
+        savedInstanceState.putString("MOVIEDETAILS", stringDetails);
 
         // etc.
     }
-
 
 
 }

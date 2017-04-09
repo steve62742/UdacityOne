@@ -35,7 +35,10 @@ public class GridFragment extends Fragment
     @BindView(R.id.focusmovieslayout)
     FrameLayout focusmovieslayout;
     private GridFragmentInterface GridInterface;
-    private List<FocusMovieDAO> movies = new ArrayList<>();;
+
+    private List<FocusMovieDAO> movies;
+
+    GridAdapter focusmovieAdapter;
 
     @Override
     public void sendViewPosition(int position) {
@@ -80,14 +83,22 @@ public class GridFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         if (savedInstanceState != null) {
             // Restore last state for checked position.
             //mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
             //String json = savedInstanceState.getString("GRIDMOVIES");
             ArrayList stringMovies = savedInstanceState.getStringArrayList("GRIDMOVIES");
             Gson gson = new Gson();
-            for (int i = 0; i < stringMovies.size(); i++){
-                this.movies.add(gson.fromJson( stringMovies.get(i).toString(), FocusMovieDAO.class)  );
+            if (this.movies == null){
+                //List<FocusMovieDAO> this.movies = new ArrayList<FocusMovieDAO>();
+                this.movies = new ArrayList<FocusMovieDAO>();
+
+            }
+            if (this.movies.size()==0){
+                for (int i = 0; i < stringMovies.size(); i++){
+                    this.movies.add(gson.fromJson( stringMovies.get(i).toString(), FocusMovieDAO.class)  );
+                }
             }
 
         }
@@ -100,19 +111,24 @@ public class GridFragment extends Fragment
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this.getContext() , 2);
         createCustomAdapter(recyclerView, gridLayoutManager);
 
+
         return view;
     }
 
 
+
     private void createCustomAdapter(RecyclerView recyclerView, GridLayoutManager gridLayoutManager) {
-        GridAdapter focusmovieAdapter = new GridAdapter(this.getContext(), (int) getResources().getDimension(R.dimen.custom_item_height) , this);
+
+        focusmovieAdapter = new GridAdapter(this.getContext(), (int) getResources().getDimension(R.dimen.custom_item_height) , this);
         focusmovieAdapter.addItems(this.movies);
         if (recyclerView != null) {
             recyclerView.setLayoutManager(gridLayoutManager);
+
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(focusmovieAdapter);
         }
     }
+
 
 
 
@@ -128,6 +144,13 @@ public class GridFragment extends Fragment
 
     public void setData(List<FocusMovieDAO> movies) {
         this.movies = movies;
+    }
+
+    public void test(){
+        //this.focusmovieAdapter.cle
+        if (this.focusmovieAdapter!=null){
+            this.focusmovieAdapter.notifyDataSetChanged();
+        }
     }
 
 

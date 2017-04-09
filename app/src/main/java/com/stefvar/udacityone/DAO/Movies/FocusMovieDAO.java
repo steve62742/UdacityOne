@@ -9,11 +9,16 @@ public class FocusMovieDAO  implements Serializable {
 
 
 
+
     String title;
     String subTitle;
     String drawable;
 
+    MovieDetailsDAO movieDetails = null;
+
+
     public FocusMovieDAO(String title, String subTitle, String drawable)  {
+
         this.title = title;
         this.subTitle = subTitle;
         this.drawable = drawable;
@@ -41,6 +46,14 @@ public class FocusMovieDAO  implements Serializable {
 
     public void setDrawable(String drawable) {
         this.drawable = drawable;
+    }
+
+    public MovieDetailsDAO getMovieDetails() {
+        return movieDetails;
+    }
+
+    public void setMovieDetails(MovieDetailsDAO movieDetails) {
+        this.movieDetails = movieDetails;
     }
 
     public String getJSON(){

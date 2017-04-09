@@ -1,5 +1,8 @@
 package com.stefvar.udacityone;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.google.gson.Gson;
+import com.orhanobut.hawk.Hawk;
 import com.stefvar.udacityone.DAO.Movies.FocusMovieDAO;
 import com.stefvar.udacityone.DAO.Movies.MovieDAO;
 import com.stefvar.udacityone.DAO.Movies.MovieDetailsDAO;
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     private MovieDetailsDAO movie = new MovieDetailsDAO();
 
 
-    private String API_KEY =  "API_KEY";
+    private String API_KEY =  "YOUR_API_KEY";
 
     boolean isOpenMovieDetails = false;
     int count_api = 10;
@@ -96,7 +100,6 @@ public class MainActivity extends AppCompatActivity
             //mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
             //String json = savedInstanceState.getString("GRIDMOVIES");
             Gson gson = new Gson();
-
             if (savedInstanceState.containsKey("POPULAR") ){
                 hash_movies.put("popular" , gson.fromJson(  savedInstanceState.getString("POPULAR") , MoviesDAO.class ) );
             }
@@ -104,18 +107,18 @@ public class MainActivity extends AppCompatActivity
                 hash_movies.put("top_rated" , gson.fromJson(  savedInstanceState.getString("TOPRATED") , MoviesDAO.class ) );
             }
             movieType = savedInstanceState.getString("TYPE");
+            if (movieType.equals("SAVED")){
 
-            movies = hash_movies.get(movieType);
-
+            }else{
+                movies = hash_movies.get(movieType);
+            }
             if (savedInstanceState.containsKey("CLICKED") ){
                 clickedMovie = savedInstanceState.getInt("CLICKED");
             }
-
         }else {
-
-
             getMovies();
         }
+
 
 
     }
@@ -155,7 +158,23 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void getCollectionClick() {
+    }
 
+    @Override
+    public void openYoutube(String id){
+        try {
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + id));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+        } catch (ActivityNotFoundException e) {
+
+            // youtube is not installed.Will be opened in other available apps
+
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://youtube.com/watch?v=" + id));
+            startActivity(i);
+        }
     }
 
 
@@ -165,43 +184,146 @@ public class MainActivity extends AppCompatActivity
         getMovieDetails(position);
     }
 
+    @Override
+    public void saveMovieDB(){
+        //MovieDAO currentMovie = movies.getResults().get(clickedMovie);
+        if ( !checkSaved( movie.getId() ) )   {
+            List<FocusMovieDAO> savedlist = new ArrayList<>();
+            List<Integer> savedIds = new ArrayList<>();
+            if ( Hawk.contains("movies") ){
+                savedlist = Hawk.get("movies");
+            }
+            if ( Hawk.contains("movieids")){
+                savedIds = Hawk.get("movieids");
+            }
+            FocusMovieDAO saving = new FocusMovieDAO(movie.getTitle(), "" + movie.getVoteAverage(), movie.getPosterPath() );
+            MovieDetailsDAO tst = movie;
+            saving.setMovieDetails(tst);
+            savedlist.add( saving );
+            Hawk.put("movies" , savedlist );
+            savedIds.add(tst.getId());
+            Hawk.put("movieids", savedIds);
+        }
+    }
+
+    @Override
+    public void removeMovieDB(Integer movieID){
+
+        //MovieDAO currentMovie = movies.getResults().get(clickedMovie);
+
+
+        if ( checkSaved( movieID ) )   {
+
+            List<Integer> savedIds = new ArrayList<>();
+            List<FocusMovieDAO> savedlist = new ArrayList<>();
+            if ( Hawk.contains("movies") ){
+                savedlist = Hawk.get("movies");
+            }
+            if ( Hawk.contains("movieids")){
+                savedIds = Hawk.get("movieids");
+            }
+            savedlist.remove( savedIds.indexOf( movieID ) );
+            savedIds.remove( savedIds.indexOf( movieID ) );
+
+            Hawk.put("movies" , savedlist );
+            Hawk.put("movieids" , savedIds );
+        }
+    }
+
+    @Override
+    public Boolean checkSaved(Integer id){
+        List<Integer> savedIds = new ArrayList<>();
+        if ( Hawk.contains("movieids")){
+            savedIds = Hawk.get("movieids");
+            if ( savedIds.contains(id) ){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+    }
 
     public void getMovieDetails(final Integer moviePosition) {
-        showLoading();
-        final ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        final String movieId = String.valueOf(movies.getResults().get(moviePosition).getId());
-        String identifiers = "images,keywords,similar,lists,credits";
-        Call<MovieDetailsDAO> call = apiService.getMovieFullDetails(movieId, API_KEY, identifiers);
-        call.enqueue(new Callback<MovieDetailsDAO>() {
-            @Override
-            public void onResponse(Call<MovieDetailsDAO> call, Response<MovieDetailsDAO> response) {
-                if (response.code() == 200) {
-                    movie = response.body();
-                    movieDetailes = new MovieDetailsFragment();
-                    movieDetailes.setData(movie);
-                    changeFragment(movieDetailes, "DETAILS");
-                } else {
-                    Log.e("test2", "kodikos: " + response.code());
-                }
-            }
 
-            @Override
-            public void onFailure(Call<MovieDetailsDAO> call, Throwable t) {
-                //showError("There seems to be a problem, are you connected to the Internet?");
-                System.out.println("Failed call " + t);
-                System.out.println("stack trace: ");
-                Log.e("test2", t.toString());
-            }
-        });
+        showLoading();
+
+        if (movieType.equals("saved")) {
+
+            List<FocusMovieDAO> savedMovies = Hawk.get("movies");
+            movie = savedMovies.get(moviePosition).getMovieDetails();
+            movieDetailes = new MovieDetailsFragment();
+            movieDetailes.setData(movie);
+            changeFragment(movieDetailes, "DETAILS");
+
+        }else{
+
+            final ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            final String movieId = String.valueOf(movies.getResults().get(moviePosition).getId());
+            String identifiers = "images,keywords,similar,lists,credits,videos,reviews";
+            Call<MovieDetailsDAO> call = apiService.getMovieFullDetails(movieId, API_KEY, identifiers);
+            call.enqueue(new Callback<MovieDetailsDAO>() {
+                @Override
+                public void onResponse(Call<MovieDetailsDAO> call, Response<MovieDetailsDAO> response) {
+                    if (response.code() == 200) {
+                        movie = response.body();
+                        movieDetailes = new MovieDetailsFragment();
+                        movieDetailes.setData(movie);
+                        changeFragment(movieDetailes, "DETAILS");
+                    } else {
+                        Log.e("test2", "kodikos: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MovieDetailsDAO> call, Throwable t) {
+                    //showError("There seems to be a problem, are you connected to the Internet?");
+                    System.out.println("Failed call " + t);
+                    System.out.println("stack trace: ");
+                    Log.e("test2", t.toString());
+                }
+            });
+
+
+        }
+
+
+
     }
 
 
 
     public void getMovies() {
 
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<MoviesDAO> call = apiService.getPreListedMovies(movieType, API_KEY);
-        //if (reshowFragment(path) == false) {
+        if (movieType.equals("saved")){
+
+            showLoading();
+
+            //movies = response.body();
+            //hash_movies.put(movieType, movies);
+            gridFragment = new GridFragment();
+            List<FocusMovieDAO> savedMovies = Hawk.get("movies");
+
+
+//            List<FocusMovieDAO> testlist = new ArrayList<>();
+//            List<MovieDAO> fetchedMovies = movies.getResults();
+//            for (int i = 0; i < count_api; i++) {
+//                MovieDAO currentMovie = fetchedMovies.get(i);
+//
+//                testlist.add(new FocusMovieDAO(currentMovie.getTitle(), "" + currentMovie.getVoteAverage(), currentMovie.getPosterPath() ));
+//            }
+            gridFragment.setData(savedMovies);
+            changeFragment(gridFragment, movieType);
+
+
+
+        }else{
+
+
+            ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            Call<MoviesDAO> call = apiService.getPreListedMovies(movieType, API_KEY);
             showLoading();
             call.enqueue(new Callback<MoviesDAO>() {
                 @Override
@@ -215,10 +337,12 @@ public class MainActivity extends AppCompatActivity
                         List<MovieDAO> fetchedMovies = movies.getResults();
                         for (int i = 0; i < count_api; i++) {
                             MovieDAO currentMovie = fetchedMovies.get(i);
+
                             testlist.add(new FocusMovieDAO(currentMovie.getTitle(), "" + currentMovie.getVoteAverage(), currentMovie.getPosterPath() ));
                         }
                         gridFragment.setData(testlist);
                         changeFragment(gridFragment, movieType);
+
                     } else {
                         Log.e("test2", "kodikos: " + response.code());
                     }
@@ -232,7 +356,12 @@ public class MainActivity extends AppCompatActivity
                     Log.e("test2", t.toString());
                 }
             });
-        //}
+            //}
+
+
+
+        }
+
     }
 
 
@@ -285,12 +414,24 @@ public class MainActivity extends AppCompatActivity
                 FragmentManager.BackStackEntry test = fragmentM.getBackStackEntryAt(count - 2);
                 if (!String.valueOf(test.getName()).equals("DETAILS") && !String.valueOf(test.getName()).equals("QUESTIONS") && !String.valueOf(test.getName()).equals("ABOUT") ) {
                     movies = hash_movies.get(String.valueOf(test.getName()));
+                    GridFragment saved = (GridFragment) fragmentM.findFragmentByTag(test.getName());
                     switch ( String.valueOf(test.getName())  ) {
                         case "popular":
                             navView.setCheckedItem(R.id.nav_popular);
+                            movieType = "popular";
                             break;
                         case "top_rated":
                             navView.setCheckedItem(R.id.nav_rated);
+                            movieType = "movieType";
+                            break;
+                        case "saved":
+
+                            List<FocusMovieDAO> savedMovies = Hawk.get("movies");
+                            saved.setData(savedMovies);
+                            saved.test();
+
+                            navView.setCheckedItem(R.id.nav_saved);
+                            movieType = "saved";
                             break;
                     }
                 }
@@ -323,6 +464,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_popular && !item.isChecked() ) {
+
             //getMovies("popular");
             movieType = "popular";
             getMovies();
@@ -331,15 +473,18 @@ public class MainActivity extends AppCompatActivity
             //getMovies("top_rated");
             movieType = "top_rated";
             getMovies();
+
+        } else if (id == R.id.nav_saved && !item.isChecked() ) {
+            //getMovies("top_rated");
+            movieType = "saved";
+            getMovies();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {

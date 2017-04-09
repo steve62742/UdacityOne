@@ -39,7 +39,7 @@ public class GridAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return count;
+        return items.size();
     }
 
 
@@ -65,12 +65,14 @@ public class GridAdapter extends RecyclerView.Adapter {
         holder.titleTextView.setText(focusMovieDAO.getTitle());
         holder.subtitleTextView.setText(focusMovieDAO.getSubTitle());
         Picasso.with(context)
+
                 .load("https://image.tmdb.org/t/p/w500"+ focusMovieDAO.getDrawable())
                 .error(R.drawable.error)
                 .placeholder(R.drawable.placeholder)
                 .fit()
                 //.centerCrop()
                 .centerInside()
+
                 .into(holder.image);
 
     }
