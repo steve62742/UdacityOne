@@ -1,7 +1,9 @@
 package com.stefvar.udacityone;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,13 +20,16 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.google.gson.Gson;
-import com.orhanobut.hawk.Hawk;
 import com.stefvar.udacityone.DAO.Movies.FocusMovieDAO;
 import com.stefvar.udacityone.DAO.Movies.MovieDAO;
 import com.stefvar.udacityone.DAO.Movies.MovieDetailsDAO;
 import com.stefvar.udacityone.DAO.Movies.MoviesDAO;
 import com.stefvar.udacityone.api.ApiClient;
 import com.stefvar.udacityone.api.ApiInterface;
+import com.stefvar.udacityone.database.DataBaseHelper;
+import com.stefvar.udacityone.database.MovieDataSource;
+import com.stefvar.udacityone.database.MovieJSON;
+import com.stefvar.udacityone.database.MovieProvider;
 import com.stefvar.udacityone.fragments.GridFragment;
 import com.stefvar.udacityone.fragments.LoadingFragment;
 import com.stefvar.udacityone.fragments.MovieDetailsFragment;
@@ -60,6 +65,9 @@ public class MainActivity extends AppCompatActivity
     private HashMap<String, MoviesDAO> hash_movies = new HashMap<>();
     private MovieDetailsDAO movie = new MovieDetailsDAO();
 
+    private MovieDataSource datasource;
+
+    private DataBaseHelper dbHelper = new DataBaseHelper(this);
 
     private String API_KEY =  "YOUR_API_KEY";
 
@@ -68,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     Integer clickedMovie;
     String movieType = "popular";
 
+    Gson gson = new Gson();
 
 
     @BindView(R.id.toolbar)
@@ -85,6 +94,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        datasource = new MovieDataSource(this);
+        datasource.open();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -142,9 +154,12 @@ public class MainActivity extends AppCompatActivity
         if (loadingFragment == null){
             loadingFragment = new LoadingFragment();
         }
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_activity_content, loadingFragment, "LOADING")
-                .commit();
+        if (!loadingFragment.isAdded()){
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_activity_content, loadingFragment, "LOADING")
+                    .commit();
+        }
+
         //}
         //loadingFragment.setColors(customColors.getThemeColors());
     }
@@ -188,21 +203,36 @@ public class MainActivity extends AppCompatActivity
     public void saveMovieDB(){
         //MovieDAO currentMovie = movies.getResults().get(clickedMovie);
         if ( !checkSaved( movie.getId() ) )   {
-            List<FocusMovieDAO> savedlist = new ArrayList<>();
-            List<Integer> savedIds = new ArrayList<>();
-            if ( Hawk.contains("movies") ){
-                savedlist = Hawk.get("movies");
-            }
-            if ( Hawk.contains("movieids")){
-                savedIds = Hawk.get("movieids");
-            }
+//            List<FocusMovieDAO> savedlist = new ArrayList<>();
+//            List<Integer> savedIds = new ArrayList<>();
+//            if ( Hawk.contains("movies") ){
+//                savedlist = Hawk.get("movies");
+//            }
+//            if ( Hawk.contains("movieids")){
+//                savedIds = Hawk.get("movieids");
+//            }
             FocusMovieDAO saving = new FocusMovieDAO(movie.getTitle(), "" + movie.getVoteAverage(), movie.getPosterPath() );
             MovieDetailsDAO tst = movie;
             saving.setMovieDetails(tst);
-            savedlist.add( saving );
-            Hawk.put("movies" , savedlist );
-            savedIds.add(tst.getId());
-            Hawk.put("movieids", savedIds);
+
+            //datasource.saveMovie(saving);
+
+            ContentValues svvalues = new ContentValues();
+
+            svvalues.put( DataBaseHelper.COLUMN_MOVIE, gson.toJson(saving)  );
+            svvalues.put( DataBaseHelper.COLUMN_ID , saving.getMovieDetails().getId() );
+
+            Uri insert = Uri.parse(MovieProvider.CONTENT_URI + "/"
+            );
+
+            Uri result = getContentResolver().insert(insert , svvalues);
+
+
+
+//            savedlist.add( saving );
+//            Hawk.put("movies" , savedlist );
+//            savedIds.add(tst.getId());
+//            Hawk.put("movieids", savedIds);
         }
     }
 
@@ -214,35 +244,46 @@ public class MainActivity extends AppCompatActivity
 
         if ( checkSaved( movieID ) )   {
 
-            List<Integer> savedIds = new ArrayList<>();
-            List<FocusMovieDAO> savedlist = new ArrayList<>();
-            if ( Hawk.contains("movies") ){
-                savedlist = Hawk.get("movies");
-            }
-            if ( Hawk.contains("movieids")){
-                savedIds = Hawk.get("movieids");
-            }
-            savedlist.remove( savedIds.indexOf( movieID ) );
-            savedIds.remove( savedIds.indexOf( movieID ) );
+            Uri delete = Uri.parse(MovieProvider.CONTENT_URI + "/"
+            );
+            int result = getContentResolver().delete(delete , movieID.toString() , null);
+            //datasource.deleteMovie(movieID);
 
-            Hawk.put("movies" , savedlist );
-            Hawk.put("movieids" , savedIds );
+//            List<Integer> savedIds = new ArrayList<>();
+//            List<FocusMovieDAO> savedlist = new ArrayList<>();
+//            if ( Hawk.contains("movies") ){
+//                savedlist = Hawk.get("movies");
+//            }
+//            if ( Hawk.contains("movieids")){
+//                savedIds = Hawk.get("movieids");
+//            }
+//            savedlist.remove( savedIds.indexOf( movieID ) );
+//            savedIds.remove( savedIds.indexOf( movieID ) );
+//
+//            Hawk.put("movies" , savedlist );
+//            Hawk.put("movieids" , savedIds );
         }
     }
 
     @Override
     public Boolean checkSaved(Integer id){
-        List<Integer> savedIds = new ArrayList<>();
-        if ( Hawk.contains("movieids")){
-            savedIds = Hawk.get("movieids");
-            if ( savedIds.contains(id) ){
-                return true;
-            }else{
-                return false;
-            }
+        FocusMovieDAO check = datasource.getMovie(id);
+        if (check !=null){
+            return true;
         }else{
             return false;
         }
+//        List<Integer> savedIds = new ArrayList<>();
+//        if ( Hawk.contains("movieids")){
+//            savedIds = Hawk.get("movieids");
+//            if ( savedIds.contains(id) ){
+//                return true;
+//            }else{
+//                return false;
+//            }
+//        }else{
+//            return false;
+//        }
 
     }
 
@@ -252,7 +293,29 @@ public class MainActivity extends AppCompatActivity
 
         if (movieType.equals("saved")) {
 
-            List<FocusMovieDAO> savedMovies = Hawk.get("movies");
+            //List<FocusMovieDAO> savedMovies = datasource.getMovies();
+
+            String[] projection = { dbHelper.COLUMN_ID,
+                    dbHelper.COLUMN_MOVIE };
+            Uri uri = Uri.parse(MovieProvider.CONTENT_URI + "/"
+            );
+            Cursor cursor = getContentResolver().query(uri, projection, null, null,
+                    null);
+            List<FocusMovieDAO> savedMovies = new ArrayList<FocusMovieDAO>();
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    MovieJSON movie = cursorToMovie(cursor);
+                    savedMovies.add(movie.getMovie());
+                    cursor.moveToNext();
+                }
+
+                // always close the cursor
+                cursor.close();
+            }
+
+
+
             movie = savedMovies.get(moviePosition).getMovieDetails();
             movieDetailes = new MovieDetailsFragment();
             movieDetailes.setData(movie);
@@ -304,7 +367,27 @@ public class MainActivity extends AppCompatActivity
             //movies = response.body();
             //hash_movies.put(movieType, movies);
             gridFragment = new GridFragment();
-            List<FocusMovieDAO> savedMovies = Hawk.get("movies");
+
+            String[] projection = { dbHelper.COLUMN_ID,
+                    dbHelper.COLUMN_MOVIE };
+            Uri uri = Uri.parse(MovieProvider.CONTENT_URI + "/"
+                    );
+            Cursor cursor = getContentResolver().query(uri, projection, null, null,
+                    null);
+            List<FocusMovieDAO> savedMovies = new ArrayList<FocusMovieDAO>();
+            if (cursor != null) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    MovieJSON movie = cursorToMovie(cursor);
+                    savedMovies.add(movie.getMovie());
+                    cursor.moveToNext();
+                }
+
+                // always close the cursor
+                cursor.close();
+            }
+
+            //List<FocusMovieDAO> savedMovies = datasource.getMovies();
 
 
 //            List<FocusMovieDAO> testlist = new ArrayList<>();
@@ -369,7 +452,12 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
+    private MovieJSON cursorToMovie(Cursor cursor) {
+        MovieJSON movie = new MovieJSON();
+        movie.setId(cursor.getLong(0));
+        movie.setmovieJSON(cursor.getString(1));
+        return movie;
+    }
 
 
 
@@ -426,7 +514,30 @@ public class MainActivity extends AppCompatActivity
                             break;
                         case "saved":
 
-                            List<FocusMovieDAO> savedMovies = Hawk.get("movies");
+                            //List<FocusMovieDAO> savedMovies = datasource.getMovies();
+
+
+
+                            String[] projection = { dbHelper.COLUMN_ID,
+                                    dbHelper.COLUMN_MOVIE };
+                            Uri uri = Uri.parse(MovieProvider.CONTENT_URI + "/"
+                            );
+                            Cursor cursor = getContentResolver().query(uri, projection, null, null,
+                                    null);
+                            List<FocusMovieDAO> savedMovies = new ArrayList<FocusMovieDAO>();
+                            if (cursor != null) {
+                                cursor.moveToFirst();
+                                while (!cursor.isAfterLast()) {
+                                    MovieJSON movie = cursorToMovie(cursor);
+                                    savedMovies.add(movie.getMovie());
+                                    cursor.moveToNext();
+                                }
+
+                                // always close the cursor
+                                cursor.close();
+                            }
+
+
                             saved.setData(savedMovies);
                             saved.test();
 

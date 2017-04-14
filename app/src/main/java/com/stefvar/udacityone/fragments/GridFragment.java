@@ -120,7 +120,9 @@ public class GridFragment extends Fragment
     private void createCustomAdapter(RecyclerView recyclerView, GridLayoutManager gridLayoutManager) {
 
         focusmovieAdapter = new GridAdapter(this.getContext(), (int) getResources().getDimension(R.dimen.custom_item_height) , this);
-        focusmovieAdapter.addItems(this.movies);
+        if (this.movies != null){
+            focusmovieAdapter.addItems(this.movies);
+        }
         if (recyclerView != null) {
             recyclerView.setLayoutManager(gridLayoutManager);
 
@@ -164,8 +166,10 @@ public class GridFragment extends Fragment
         // killed and restarted.
         Gson gson = new Gson();
         ArrayList stringMovies = new ArrayList();
-        for (int i = 0; i<this.movies.size(); i++){
-            stringMovies.add( gson.toJson(this.movies.get(i)) );
+        if (this.movies.size()>0){
+            for (int i = 0; i<this.movies.size(); i++){
+                stringMovies.add( gson.toJson(this.movies.get(i)) );
+            }
         }
         savedInstanceState.putStringArrayList("GRIDMOVIES" , stringMovies );
 
