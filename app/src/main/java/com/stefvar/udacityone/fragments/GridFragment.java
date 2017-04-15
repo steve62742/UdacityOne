@@ -83,6 +83,9 @@ public class GridFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        if (this.movies == null ) {
+            this.movies = new ArrayList<>();
+        }
 
         if (savedInstanceState != null) {
             // Restore last state for checked position.
